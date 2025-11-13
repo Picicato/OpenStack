@@ -1,4 +1,5 @@
 variable "grafana_password" {
-  type = string
+  type        = string
   description = "Admin grafana password"
+  default = "admin"
 }
