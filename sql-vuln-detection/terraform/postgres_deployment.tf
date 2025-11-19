@@ -28,23 +28,27 @@ resource "kubernetes_deployment" "postgres" {
           name  = "postgres"
           image = "postgres:15-alpine"
 
-          port {
-            container_port = 5432
-          }
-
           env {
             name  = "POSTGRES_DB"
             value = "test"
           }
-
           env {
             name  = "POSTGRES_USER"
             value = "test"
           }
-
           env {
             name  = "POSTGRES_PASSWORD"
             value = "test"
+          }
+
+          port {
+            container_port = 5432
+          }
+
+          volume_mount {
+            name       = "init-sql"
+            mount_path = "/docker-entrypoint-initdb.d"
+            read_only  = true
           }
 
           volume_mount {
@@ -67,4 +71,25 @@ resource "kubernetes_deployment" "postgres" {
       }
     }
   }
-}   
+}
+
+resource "kubernetes_service" "postgres" {
+  metadata {
+    name      = "postgres"
+    namespace = var.namespace
+  }
+
+  spec {
+    selector = {
+      app = "postgres"
+    }
+
+    port {
+      port        = 5432
+      target_port = 5432
+      protocol    = "TCP"
+    }
+
+    type = "ClusterIP"
+  }
+}
