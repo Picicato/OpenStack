@@ -37,17 +37,14 @@ resource "kubernetes_deployment" "vuln_app" {
             name  = "PG_HOST"
             value = "postgres"
           }
-
           env {
             name  = "PG_DB"
             value = "test"
           }
-
           env {
             name  = "PG_USER"
             value = "test"
           }
-
           env {
             name  = "PG_PASS"
             value = "test"
@@ -72,10 +69,8 @@ resource "kubernetes_service" "vuln_app" {
     port {
       port        = 80
       target_port = 5000
-      protocol    = "TCP"
     }
 
     type = "NodePort"
   }
 }
-

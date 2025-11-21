@@ -1,9 +1,22 @@
-resource "kubernetes_namespace" "lab" {
-  metadata {
-    name = var.namespace
-  }
+module "namespace" {
+  source    = "./modules/namespace"
+  namespace = var.namespace
 }
 
-output "namespace" {
-  value = kubernetes_namespace.lab.metadata[0].name
+module "postgres" {
+  source     = "./modules/postgres"
+  namespace  = module.namespace.name
+  depends_on = [module.namespace]
+}
+
+module "app" {
+  source     = "./modules/app"
+  namespace  = module.namespace.name
+  depends_on = [module.namespace, module.postgres]
+}
+
+module "sqli_detector" {
+  source     = "./modules/sqli_detector"
+  namespace  = module.namespace.name
+  depends_on = [module.namespace, module.app]
 }
